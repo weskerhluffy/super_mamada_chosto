@@ -552,8 +552,10 @@ int super_mamada_chosto_procesa_conjuntos_cb(conjunto_pendejo_ctx *ctx,
 
 	if (peso_act != peso_ant) {
 		ctx->idx_peso_actual_conjunto_pendejo_ctx = ++idx_peso_act;
+#if 0
 		ctx->acumulacion_rutas_cnt_conjunto_pendejo_ctx[idx_peso_act] =
-				ctx->acumulacion_rutas_cnt_conjunto_pendejo_ctx[idx_peso_act - 1];
+		ctx->acumulacion_rutas_cnt_conjunto_pendejo_ctx[idx_peso_act - 1];
+#endif
 	}
 	ctx->pesos_rutas_conjunto_pendejo_ctx[idx_peso_act] = peso_act;
 
@@ -671,6 +673,7 @@ static inline void super_mamada_chosto_core(conjunto_pendejo_arista *aristas,
 
 		caca_log_debug("el idx fin %u", idx_acum_ruta_fin);
 
+#if 0
 		if (idx_acum_ruta_fin != CACA_COMUN_VALOR_INVALIDO) {
 			acum_rutas = acumulacion_rutas_cnt[idx_acum_ruta_fin];
 			caca_log_debug("d inter fin %llu", acum_rutas);
@@ -680,6 +683,21 @@ static inline void super_mamada_chosto_core(conjunto_pendejo_arista *aristas,
 						acumulacion_rutas_cnt[idx_acum_ruta_ini]);
 			}
 		}
+#else
+		natural idx_peso_act = 0;
+		for (int j = inter_act->inicio_inter;
+				j <= inter_act->fin_inter
+						&& idx_peso_act
+								<= ctx->idx_peso_actual_conjunto_pendejo_ctx + 1;
+				j++) {
+			while (pesos_rutas[idx_peso_act] < j) {
+				idx_peso_act++;
+			}
+			if (j == pesos_rutas[idx_peso_act]) {
+				acum_rutas += acumulacion_rutas_cnt[idx_peso_act];
+			}
+		}
+#endif
 
 		printf("%llu\n", acum_rutas);
 
